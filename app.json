@@ -1,7 +1,8 @@
 {
   "expo": {
-    "name": "MyProject2",
-    "slug": "MyProject2",
+    "name": "TooGoodToToss",
+    "scheme": "toogoodtotoss",
+    "slug": "TooGoodToToss",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -18,10 +19,22 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.anonymous.TooGoodToToss"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
+      "expo-router",
+      "expo-build-properties"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "3a762ad4-1403-4f2e-8ebc-13c9501dc7e4"
+      }
     }
   }
 }
