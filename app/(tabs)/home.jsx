@@ -39,7 +39,7 @@ const Home = () => {
         //data={[]}
         keyExtractor={(item) => item.$id}
         renderItem={({ item }) => (
-          <ImageCard image={item.image}  title={item.title} />
+          <ImageCard image={item.image}  title={item.title} price={item.price} />
         )}
         ListHeaderComponent={() => (
           <View className="my-6 px-4 space-y-6">
