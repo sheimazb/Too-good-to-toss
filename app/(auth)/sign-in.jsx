@@ -6,11 +6,12 @@ import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
 import { Link, useNavigation } from "expo-router";
 import { authService } from "../../services/authService";
+import { useGlobalContext } from '../../context/GlobalProvider';
 
 const SignIn = () => {
 
   const navigation =useNavigation();
-
+  const { setUser } = useGlobalContext();
   const [form, setForm] = useState({
     email: "",
     Password: "",
@@ -22,6 +23,8 @@ const SignIn = () => {
     setIsSubmiting(true);
     try {
       const user = await authService.login(form.email, form.Password);
+      setUser(user);  
+
       console.log("User logged in successfully:", user);
 
       // Navigate to next screen or show success message

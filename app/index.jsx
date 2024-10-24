@@ -37,6 +37,7 @@ const App = () => {
           <CustomButton
         title="Contenue Restaurant owner"
         handlePress={()=>router.push('/(auth)/sign-in')}
+        // handlePress={()=>navigation.navigate('(tabs)')}
         containerStyles="w-full mt-3"
         />
         <CustomButton
