@@ -3,14 +3,20 @@ import { View, Text, TouchableOpacity, Image, Modal, TextInput } from "react-nat
 import { icons } from "../constants";
 import { createCommande } from "../services/databaseService"; // Importer la fonction pour créer une commande
 import { useGlobalContext } from "../context/GlobalProvider";
+import { useRouter,useNavigation } from "expo-router"; // Importer useRouter
 
 const ImageCard = ({ title, creator, price, image }) => {
+  const navigation =useNavigation();
+
   const [selectedItem, setSelectedItem] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [menuVisible, setMenuVisible] = useState(false); // État pour le menu
+  const [detailsVisible, setDetailsVisible] = useState(false); // État pour les détails
   const [paymentMethod, setPaymentMethod] = useState('carte');
   const [quantity, setQuantity] = useState(''); // État pour la quantité
   const [address, setAddress] = useState(''); // État pour l'adresse
   const { user } = useGlobalContext();
+  const router = useRouter(); // Initialiser le router
 
   const handleCommanderPress = (item) => {
     setSelectedItem(item);
@@ -37,6 +43,26 @@ const ImageCard = ({ title, creator, price, image }) => {
     }
   };
 
+  // Fonction pour gérer les actions du menu
+  const handleMenuOption = (option) => {
+    setMenuVisible(false); // Fermer le menu
+    console.log(`Option sélectionnée: ${option}`);
+    switch (option) {
+      case 'Settings':
+        console.log("Navigating to Settings");
+        break;
+      case 'Details':
+        console.log("Navigating to details");
+        navigation.navigate('pages/details'); // Directly call navigation.navigate
+        break;
+      case 'Hide':
+        console.log("Element caché");
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
     <View className="flex flex-col items-center px-4 mb-14">
       <View className="flex flex-row gap-3 items-start">
@@ -60,7 +86,9 @@ const ImageCard = ({ title, creator, price, image }) => {
         </View>
 
         <View className="pt-1">
-          <Image source={icons.menu} className="w-5 h-5" resizeMode="contain" />
+          <TouchableOpacity onPress={() => setMenuVisible(true)}>
+            <Image source={icons.menu} className="w-5 h-5" resizeMode="contain" />
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -81,6 +109,52 @@ const ImageCard = ({ title, creator, price, image }) => {
         <Text className="text-white">{price} DT</Text>
       </View>
       
+      {/* Modal pour le menu */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={menuVisible}
+        onRequestClose={() => setMenuVisible(false)}
+      >
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <View style={{ width: 200, backgroundColor: 'white', borderRadius: 10, padding: 20 }}>
+            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Menu</Text>
+            <TouchableOpacity onPress={() => handleMenuOption('Settings')}>
+              <Text style={{ marginTop: 10 }}>Settings</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleMenuOption('Details')}>
+              <Text style={{ marginTop: 10 }}>Details</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleMenuOption('Hide')}>
+              <Text style={{ marginTop: 10 }}>Hide</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setMenuVisible(false)}>
+              <Text style={{ marginTop: 20, color: 'red' }}>Fermer</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal pour les détails */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={detailsVisible}
+        onRequestClose={() => setDetailsVisible(false)}
+      >
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <View style={{ width: 300, backgroundColor: 'white', borderRadius: 10, padding: 20 }}>
+            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Détails</Text>
+            <Text style={{ marginTop: 20 }}>Titre : {selectedItem?.title}</Text>
+            <Text style={{ marginTop: 10 }}>Créateur : {creator}</Text>
+            <Text style={{ marginTop: 10 }}>Prix : {price} DT</Text>
+            <TouchableOpacity onPress={() => setDetailsVisible(false)}>
+              <Text style={{ marginTop: 20, color: 'red' }}>Fermer</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       <Modal
         animationType="slide"
         transparent={true}

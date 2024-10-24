@@ -10,3 +10,8 @@ export const createCommande = async (commande) => {
   const docRef = await addDoc(collection(db, "Commandes"), commande);
   return docRef.id; // Retourner l'ID de la nouvelle commande
 };
+
+export const getCommandes = async () => {
+  const snapshot = await getDocs(collection(db, "Commandes"));
+  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+};

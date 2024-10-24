@@ -6,54 +6,43 @@ import {
   FlatList,
   Modal,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../../constants";
+import { getCommandes } from "../../services/databaseService";
 
-const data = [
-  {
-    id: "1",
-    title: "Pasta",
-    userName: "User 1",
-    quantity: 2,
-    date: "12/2/2024",
-    heure: "10:56",
-  },
-  {
-    id: "2",
-    title: "Sandwish",
-    userName: "User 2",
-    quantity: 3,
-    date: "12/2/2024",
-    heure: "10:56",
-  },
-  {
-    id: "3",
-    title: "Makloub",
-    userName: "User 3",
-    quantity: 1,
-    date: "12/2/2024",
-    heure: "10:56",
-  },
-  // Ajoutez d'autres utilisateurs ici
-];
-
-const Plan = () => {
+const CommandList = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [commands, setCommands] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchCommands = async () => {
+    try {
+      const fetchedCommands = await getCommandes();
+      setCommands(fetchedCommands);
+    } catch (error) {
+      console.error("Error fetching commands:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCommands();
+  }, []);
 
   const renderItem = ({ item }) => (
     <View className="flex-col ">
       <View className="flex-row justify-between items-center p-4 bg-white rounded-lg mb-1 mt-3">
         <View className="flex-col items-start justify-start">
           <Text className="text-lg font-semibold">{item.title}</Text>
-          <Text className="text-xs">{item.userName}</Text>
+          <Text className="text-xs">Utilisateur ID: {item.idUser}</Text>
         </View>
         <View className="flex items-end">
           <Text className="text-lg">Qty: {item.quantity}</Text>
           <Text className="text-xs">
-            {" "}
-            {item.date}--{item.heure}
+            Adresse: {item.address}
           </Text>
         </View>
       </View>
@@ -92,11 +81,15 @@ const Plan = () => {
         </View>
 
         {/* Liste des commandes */}
-        <FlatList
-          data={data}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-        />
+        {isLoading ? (
+          <Text className="text-white">Loading...</Text>
+        ) : (
+          <FlatList
+            data={commands}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+          />
+        )}
 
         {/* Modal pour afficher les détails de la commande */}
         <Modal
@@ -113,10 +106,9 @@ const Plan = () => {
               {selectedOrder && (
                 <>
                   <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{selectedOrder.title}</Text>
-                  <Text style={{ marginTop: 10 }}>Utilisateur: {selectedOrder.userName}</Text>
+                  <Text style={{ marginTop: 10 }}>Utilisateur ID: {selectedOrder.idUser}</Text>
                   <Text style={{ marginTop: 10 }}>Quantité: {selectedOrder.quantity}</Text>
-                  <Text style={{ marginTop: 10 }}>Date: {selectedOrder.date}</Text>
-                  <Text style={{ marginTop: 10 }}>Heure: {selectedOrder.heure}</Text>
+                  <Text style={{ marginTop: 10 }}>Adresse: {selectedOrder.address}</Text>
                 </>
               )}
               <TouchableOpacity
@@ -136,4 +128,4 @@ const Plan = () => {
   );
 };
 
-export default Plan;
+export default CommandList;
