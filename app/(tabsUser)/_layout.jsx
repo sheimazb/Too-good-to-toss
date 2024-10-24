@@ -56,15 +56,15 @@ const TabsLayout = () => {
         />
 
         <Tabs.Screen
-          name="create"
+          name="favoris"
           options={{
-            title: "Create",
+            title: "Favoris",
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
-                icon={icons.plus}
+                icon={icons.play}
                 color={color}
-                name="Create"
+                name="Favoris"
                 focused={focused}
               />
             ),
