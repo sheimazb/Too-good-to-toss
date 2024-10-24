@@ -23,7 +23,6 @@ export const getAnnoncments = async () => {
       const userRef = doc(db, "users", idResto);
       const userSnapshot = await getDoc(userRef);
       const userData = userSnapshot.data();
-      console.log("userData", userData);
       return {
         id: docSnapshot.id,
         ...announcementData,

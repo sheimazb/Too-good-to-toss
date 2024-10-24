@@ -1,5 +1,5 @@
-import { View, Text, FlatList, Image, RefreshControl } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { View, Text, FlatList, Image, RefreshControl, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../../constants";
 import SearchInput from "../../components/SearchInpu";
@@ -8,82 +8,109 @@ import EmptyState from "../../components/EmptyState";
 import { router } from "expo-router";
 import { TouchableOpacity } from "react-native";
 import { getAnnoncments } from "../../services/databaseService";
-import useDatabaseService from "../../services/useDatabaseService";
 import ImageCard from "../../components/ImageCard";
 
 const Home = () => {
   const [refreshing, setRefreshing] = useState(false);
+  const [posts, setPosts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
-  const categories =[
-    { $id: '1', imageUri: images.market, title: 'Market' },
-    { $id: '2', imageUri: images.bread, title: 'Bakery' },
-    { $id: '3', imageUri: images.restaurant, title: 'Restaurant' },
-  ]
-  //call the useGetAppData hook
-  const {
-    data: posts,
-    isLoading,
-    refetch,
-  } = useDatabaseService(getAnnoncments);
+  const categories = [
+    { id: 'all', mageUri: images.market,title: 'All' },
+    { id: 'market', imageUri: images.market, title: 'Market' },
+    { id: 'bakery', imageUri: images.bread, title: 'Bakery' },
+    { id: 'restaurants', imageUri: images.restaurant, title: 'Restaurant' },
+  ];
+
+  useEffect(() => {
+    fetchPosts();
+    console.log('selectedCategory',selectedCategory)
+  }, [selectedCategory]);
+
+  const fetchPosts = async () => {
+    setIsLoading(true);
+    try {
+      const allPosts = await getAnnoncments();
+      const filteredPosts = selectedCategory === 'all' ? allPosts : allPosts.filter(post => post.category === selectedCategory);
+      setPosts(filteredPosts);
+    } catch (error) {
+      console.error("Failed to fetch posts:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await refetch();
+    await fetchPosts();
     setRefreshing(false);
   };
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <SafeAreaView style={{ backgroundColor: '#0d1117', flex: 1 }}>
       <FlatList
         data={posts}
-        //data={[]}
-        keyExtractor={(item) => item.$id}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <ImageCard image={item.image}  title={item.title} price={item.price} />
+          <ImageCard image={item.image} title={item.title} price={item.price} />
         )}
         ListHeaderComponent={() => (
-          <View className="my-6 px-4 space-y-6">
-            <View className=" justify-between items-start flex-row mb-6">
-              <View>
-                <Text className="font-pmedium text-sm text-gray-100">
-                  welcome Back
-                </Text>
-                <Text className="font-psemibold text-2xl text-white">
-                  Too Good To Toss
-                </Text>
-              </View>
-              <View className="mt-1.5">
-                <TouchableOpacity onPress={() => router.push("/")}>
+          <View style={{ margin: 16 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 }}>
+              <Text style={{ color: '#ffffff', fontSize: 24 }}>
+                Too Good To Toss
+              </Text>
+              <TouchableOpacity onPress={() => router.push("/")}>
                 <Image
                   source={images.logoSmall}
-                  className="h-10 w-9"
+                  style={{ width: 36, height: 36 }}
                   resizeMode="contain"
-                /></TouchableOpacity>
-              </View>
+                />
+              </TouchableOpacity>
             </View>
-            <SearchInput placeholder="Serch for a restaurant" />
-            <View className="w-full flex-1 pt-5 pb-4">
-              <Text className="text-gray-100 text-lg font-pregular mb-3">
+            <SearchInput placeholder="Search for a restaurant" />
+            <View style={{ paddingTop: 20, paddingBottom: 16 }}>
+              <Text style={{ color: '#ffffff', fontSize: 18, marginBottom: 8 }}>
                 Categories
               </Text>
-                <Trending
-                  posts={categories}
-                />
+              <FlatList
+                data={categories}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                <TouchableOpacity onPress={() => setSelectedCategory(item.id)}>
+
+                <View className="w-32 h-32 items-center p-5 rounded-lg overflow-hidden border-2 bg-black-100 border-black-200">
+                  <Image
+                    source={item.imageUri} 
+                    className="w-20 h-16"
+                    resizeMode="cover"
+                  />
+                  <Text className="text-white text-center mt-2">{item.title}</Text> 
+                </View>
+              </TouchableOpacity>
+              )}
+              horizontal
+              ItemSeparatorComponent={() => <View style={{ width: 20 }} />} 
+            />
             </View>
-            <View className="w-full flex-1  pb-8">
-              <Text className="text-gray-100 text-lg font-pregular mb-3">
-                Announcements
-              </Text>
-            </View>
+            <Text style={{ color: '#ffffff', fontSize: 18, marginBottom: 8 }}>
+              Announcements
+            </Text>
           </View>
         )}
         ListEmptyComponent={() => (
-          <EmptyState title="No restaurants found" subtitle="Empty" />
+          <EmptyState title="No announcements found" subtitle="Try adjusting your filters or search query." />
         )}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       />
+      {isLoading && (
+        <View style={{ position: 'absolute', top: '50%', left: '50%', marginTop: -25, marginLeft: -25 }}>
+          <ActivityIndicator size="large" color="#00ff00" />
+        </View>
+      )}
     </SafeAreaView>
   );
 };

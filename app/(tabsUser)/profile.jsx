@@ -6,13 +6,16 @@ import InfoBox from "../../components/InfoBox";
 import ImageCard from "../../components/ImageCard";
 import { getAnnoncments } from "../../services/databaseService";
 import useDatabaseService from "../../services/useDatabaseService";
+import { useGlobalContext } from "../../context/GlobalProvider";
 
 
 const Profile = () => {
-  // Sample data for design purposes
-  const user = {
-    avatar: require("../../assets/images/profile.png") ,
-    username: "Chaima ZBIDI",
+
+  const { user } = useGlobalContext();
+
+  const userdata = {
+    avatar: require("../../assets/images/profile.png"),
+    username: user?.username || "Anonymous",
   };
 
   const {
@@ -50,14 +53,14 @@ const Profile = () => {
 
             <View className="w-16 h-16 border border-secondary rounded-lg flex justify-center items-center">
               <Image
-                source={user.avatar }
+                source={userdata.avatar }
                 className="w-[90%] h-[90%] rounded-lg"
                 resizeMode="cover"
               />
             </View>
 
             <InfoBox
-              title={user.username}
+              title={userdata.username}
               containerStyles="mt-5"
               titleStyles="text-lg"
             />

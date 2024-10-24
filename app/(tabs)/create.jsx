@@ -7,6 +7,7 @@ import {
   Alert,
   ScrollView,
 } from "react-native";
+import { Picker } from "@react-native-picker/picker"; // Import Picker
 
 import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
@@ -22,11 +23,12 @@ const Create = () => {
     title: "",
     image: "",
     description: "",
-    price: "", // Added price field
+    price: "",
+    category: "market", // Default category
   });
 
   const submit = async () => {
-    if (form.description === "" || form.title === "" || !form.image || !form.price) {
+    if (form.description === "" || form.title === "" || !form.image || !form.price || !form.category) {
       return Alert.alert("Please provide all fields");
     }
 
@@ -35,7 +37,8 @@ const Create = () => {
         title: form.title,
         description: form.description,
         image: form.image,
-        price: parseFloat(form.price), // Convert price to number
+        price: parseFloat(form.price),
+        category: form.category, // Include category in the creation
         idResto: user.uid
       });
 
@@ -48,7 +51,8 @@ const Create = () => {
         title: "",
         image: "",
         description: "",
-        price: "", // Reset price field
+        price: "",
+        category: "market", // Reset category
       });
     }
   };
@@ -79,12 +83,11 @@ const Create = () => {
           value={form.price}
           placeholder="Enter the price..."
           handleChangeText={(e) => {
-            // Only allow numbers and decimal point
             const numericValue = e.replace(/[^0-9.]/g, '');
             setForm({ ...form, price: numericValue });
           }}
           otherStyles="mt-7"
-          keyboardType="numeric" // Set keyboard type to numeric
+          keyboardType="numeric"
         />
 
         <FormField
@@ -96,6 +99,18 @@ const Create = () => {
           multiline={true}
           numberOfLines={4}
         />
+
+        {/* Category Picker */}
+        <Text style={{ fontSize: 16, color: '#fff', marginTop: 20 }}>Category</Text>
+        <Picker
+          selectedValue={form.category}
+          onValueChange={(itemValue, itemIndex) => setForm({ ...form, category: itemValue })}
+          style={{ backgroundColor: '#fff', color: '#000', marginBottom: 20 }}
+        >
+          <Picker.Item label="Market" value="market" />
+          <Picker.Item label="Bakery" value="bakery" />
+          <Picker.Item label="Restaurants" value="restaurants" />
+        </Picker>
 
         <CustomButton
           title="Submit & Publish"
