@@ -2,13 +2,15 @@ import { useState } from "react";
 import { View, Text, TouchableOpacity, Image, Modal, TextInput } from "react-native";
 import { icons } from "../constants";
 import { createCommande } from "../services/databaseService"; // Importer la fonction pour créer une commande
+import { useGlobalContext } from "../context/GlobalProvider";
 
-const ImageCard = ({ title, creator, avatar, image }) => {
+const ImageCard = ({ title, creator, price, image }) => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('carte');
   const [quantity, setQuantity] = useState(''); // État pour la quantité
   const [address, setAddress] = useState(''); // État pour l'adresse
+  const { user } = useGlobalContext();
 
   const handleCommanderPress = (item) => {
     setSelectedItem(item);
@@ -21,8 +23,8 @@ const ImageCard = ({ title, creator, avatar, image }) => {
       address: address || " ", // Adresse, avec une valeur par défaut
       carte: paymentMethod === 'carte', // Booléen pour la méthode de paiement
       espece: paymentMethod === 'espece', // Booléen pour la méthode de paiement
-      idResto: 2, // ID du restaurant, valeur statique
-      idUser: 2, // ID de l'utilisateur, valeur statique
+      idResto: user.uid, // ID du restaurant, valeur statique
+      idUser: user.uid, // ID de l'utilisateur, valeur statique
       quantity: parseInt(quantity) || 4, // Quantité, avec une valeur par défaut
     };
 
@@ -76,7 +78,7 @@ const ImageCard = ({ title, creator, avatar, image }) => {
         >
           <Text className="text-center text-white ">Commander</Text>
         </TouchableOpacity>
-        <Text className="text-white">56 DT</Text>
+        <Text className="text-white">{price} DT</Text>
       </View>
       
       <Modal
