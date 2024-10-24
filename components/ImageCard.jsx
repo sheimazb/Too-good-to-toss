@@ -80,7 +80,7 @@ const ImageCard = ({ title, creator, price, image }) => {
               {title}
             </Text>
             <Text className="text-xs text-gray-100 font-pregular" numberOfLines={1}>
-              Zbidi Chaima
+              Resto
             </Text>
           </View>
         </View>

@@ -22,10 +22,11 @@ const Create = () => {
     title: "",
     image: "",
     description: "",
+    price: "", // Added price field
   });
 
   const submit = async () => {
-    if (form.description === "" || form.title === "" || !form.image) {
+    if (form.description === "" || form.title === "" || !form.image || !form.price) {
       return Alert.alert("Please provide all fields");
     }
 
@@ -34,6 +35,7 @@ const Create = () => {
         title: form.title,
         description: form.description,
         image: form.image,
+        price: parseFloat(form.price), // Convert price to number
         idResto: user.uid
       });
 
@@ -46,6 +48,7 @@ const Create = () => {
         title: "",
         image: "",
         description: "",
+        price: "", // Reset price field
       });
     }
   };
@@ -69,6 +72,19 @@ const Create = () => {
           placeholder="Paste the URL of your image..."
           handleChangeText={(e) => setForm({ ...form, image: e })}
           otherStyles="mt-7"
+        />
+
+        <FormField
+          title="Price"
+          value={form.price}
+          placeholder="Enter the price..."
+          handleChangeText={(e) => {
+            // Only allow numbers and decimal point
+            const numericValue = e.replace(/[^0-9.]/g, '');
+            setForm({ ...form, price: numericValue });
+          }}
+          otherStyles="mt-7"
+          keyboardType="numeric" // Set keyboard type to numeric
         />
 
         <FormField
