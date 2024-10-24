@@ -4,6 +4,8 @@ import {
   addDoc,
   query,
   orderBy,
+  doc,
+  getDoc,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 
@@ -14,12 +16,26 @@ export const getAnnoncments = async () => {
   );
 
   const snapshot = await getDocs(q);
-  return snapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-    price: parseFloat(doc.data().price) || 0,
-    createdAt: doc.data().createdAt || new Date().toISOString(),
-  }));
+  const announcements = await Promise.all(
+    snapshot.docs.map(async (docSnapshot) => {
+      const announcementData = docSnapshot.data();
+      const idResto = announcementData.idResto;
+      const userRef = doc(db, "users", idResto);
+      const userSnapshot = await getDoc(userRef);
+      const userData = userSnapshot.data();
+      console.log("userData", userData);
+      return {
+        id: docSnapshot.id,
+        ...announcementData,
+        price: parseFloat(announcementData.price) || 0,
+        createdAt: announcementData.createdAt || new Date().toISOString(),
+        ownerEmail: userData ? userData.email : null, // Assuming 'email' is the field for user's email
+        ownerName: userData ? userData.name : null, // Assuming 'name' is the field for user's name
+      };
+    })
+  );
+
+  return announcements;
 };
 
 export const createCommande = async (commande) => {

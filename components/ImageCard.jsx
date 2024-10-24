@@ -11,7 +11,6 @@ const ImageCard = ({ title, creator, price, image }) => {
   const [quantity, setQuantity] = useState(''); // État pour la quantité
   const [address, setAddress] = useState(''); // État pour l'adresse
   const { user } = useGlobalContext();
-
   const handleCommanderPress = (item) => {
     setSelectedItem(item);
     setModalVisible(true);
@@ -54,7 +53,7 @@ const ImageCard = ({ title, creator, price, image }) => {
               {title}
             </Text>
             <Text className="text-xs text-gray-100 font-pregular" numberOfLines={1}>
-              Zbidi Chaima
+              Resto
             </Text>
           </View>
         </View>
