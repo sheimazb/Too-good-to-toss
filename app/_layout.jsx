@@ -4,6 +4,7 @@ import { Slot, SplashScreen, Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import { firebase } from "../config/firebase";
 import { firebaseConfig } from "../config/firebaseConfig";
+import GlobalProvider from '../context/GlobalProvider';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -54,6 +55,8 @@ const RooyLayout = () => {
   }
 
   return (
+    <GlobalProvider>
+
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="(auth)" options={{ headerShown: false }} />
@@ -61,6 +64,8 @@ const RooyLayout = () => {
       <Stack.Screen name="(tabsUser)" options={{ headerShown: false }} />
 
     </Stack>
+    </GlobalProvider>
+
   );
 };
 
