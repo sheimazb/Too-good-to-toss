@@ -35,9 +35,17 @@ const Home = () => {
     <SafeAreaView className="bg-primary h-full">
       <FlatList
         data={posts}
-        keyExtractor={(item) => item.$id}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-            <ImageCard image={item.image} title={item.title} />
+          <ImageCard 
+            image={item.image}
+            title={item.title}
+            description={item.description}
+            price={item.price}
+            userName={item.userName}
+            userEmail={item.userEmail}
+            createdAt={item.createdAt}
+          />
         )}
         ListHeaderComponent={() => (
           <View className="my-6 px-4 space-y-6">
